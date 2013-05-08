@@ -11,3 +11,15 @@
 *.lai
 *.la
 *.a
+
+# binary folders
+Debug/
+Test_Debug/
+Release/
+
+# temporary test data
+test.txt
+
+# temporary files
+*~
+
