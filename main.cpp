@@ -8,6 +8,7 @@
 using namespace std;
 
 int main(int argc, char **argv) {
+//	CStrategyResolver::getInstance().init(" la la la PTM=\"dasdadas output=\"asda\"\"");
 	std::fstream ifs;
 	uint32_t ts, value, bits;
 	std::string scale;
