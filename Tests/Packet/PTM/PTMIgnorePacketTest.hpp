@@ -1,5 +1,5 @@
 /*
- * PTMExceptionReturnPacketTest.hpp
+ * PTMIgnorePacketTest.hpp
  *
  *  Created on: Apr 29, 2013
  *      Author: mvis
@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "../Defines.hpp"
-#include "../Packet/PTM/PTMExceptionReturnPacket.hpp"
-#include "../Exceptions/enumerror.hpp"
+#include "../../../Defines.hpp"
+#include "../../../Packet/PTM/PTMIgnorePacket.hpp"
+#include "../../../Exceptions/enumerror.hpp"
 
-class CPTMExceptionReturnPacketTest: public ::testing::Test {
+class CPTMIgnorePacketTest: public ::testing::Test {
 protected:
 	virtual void SetUp() {
 		dataType data;
@@ -24,18 +24,18 @@ protected:
 		//AltIS 0
 		data.push_back(CData(0x87, 0x87));
 		data.push_back(CData(0x0, 0x0));
-		packet = new CPTMExceptionReturnPacket(0x72, data);
+		packet = new CPTMIgnorePacket(0x72, data);
 	}
 	virtual void TearDown() {
 		delete packet;
 	}
-	CPTMExceptionReturnPacket *packet;
+	CPTMIgnorePacket *packet;
 };
 
-TEST_F (CPTMExceptionReturnPacketTest, getField) {
+TEST_F (CPTMIgnorePacketTest, getField) {
 	//check exceptions
 	ASSERT_THROW(packet->getField(-1), enum_error);
-	ASSERT_THROW(packet->getField(CPTMExceptionReturnPacket::SIZE), enum_error);
+	ASSERT_THROW(packet->getField(CPTMIgnorePacket::SIZE), enum_error);
 	//check Branch fields count
-	EXPECT_EQ(CPTMExceptionReturnPacket::SIZE, 0);
+	EXPECT_EQ(CPTMIgnorePacket::SIZE, 0);
 }

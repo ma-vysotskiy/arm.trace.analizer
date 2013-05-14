@@ -1,5 +1,5 @@
 /*
- * PTMIgnorePacketTest.hpp
+ * PTMTriggerPacketTest.hpp
  *
  *  Created on: Apr 29, 2013
  *      Author: mvis
@@ -7,11 +7,13 @@
 
 #pragma once
 
-#include "../Defines.hpp"
-#include "../Packet/PTM/PTMIgnorePacket.hpp"
-#include "../Exceptions/enumerror.hpp"
+#include "../../../Defines.hpp"
+#include "../../../Packet/PTM/PTMTriggerPacket.hpp"
+#include "../../../Exceptions/enumerror.hpp"
+#include <string>
+using namespace std;
 
-class CPTMIgnorePacketTest: public ::testing::Test {
+class CPTMTriggerPacketTest: public ::testing::Test {
 protected:
 	virtual void SetUp() {
 		dataType data;
@@ -24,18 +26,18 @@ protected:
 		//AltIS 0
 		data.push_back(CData(0x87, 0x87));
 		data.push_back(CData(0x0, 0x0));
-		packet = new CPTMIgnorePacket(0x72, data);
+		packet = new CPTMTriggerPacket(0x72, data);
 	}
 	virtual void TearDown() {
 		delete packet;
 	}
-	CPTMIgnorePacket *packet;
+	CPTMTriggerPacket *packet;
 };
 
-TEST_F (CPTMIgnorePacketTest, getField) {
+TEST_F (CPTMTriggerPacketTest, getField) {
 	//check exceptions
 	ASSERT_THROW(packet->getField(-1), enum_error);
-	ASSERT_THROW(packet->getField(CPTMIgnorePacket::SIZE), enum_error);
+	ASSERT_THROW(packet->getField(CPTMTriggerPacket::SIZE), enum_error);
 	//check Branch fields count
-	EXPECT_EQ(CPTMIgnorePacket::SIZE, 0);
+	EXPECT_EQ(CPTMTriggerPacket::SIZE, 0);
 }

@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "../Defines.hpp"
-#include "../Packet/PTM/PTMContextIDPacket.hpp"
-#include "../Exceptions/enumerror.hpp"
+#include "../../../Defines.hpp"
+#include "../../../Packet/PTM/PTMContextIDPacket.hpp"
+#include "../../../Exceptions/enumerror.hpp"
 
 class CPTMContextIDPacketTest: public ::testing::Test {
 protected:

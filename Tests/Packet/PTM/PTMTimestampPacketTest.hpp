@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "../Defines.hpp"
-#include "../Packet/PTM/PTMTimestampPacket.hpp"
-#include "../Exceptions/enumerror.hpp"
+#include "../../../Defines.hpp"
+#include "../../../Packet/PTM/PTMTimestampPacket.hpp"
+#include "../../../Exceptions/enumerror.hpp"
 
 class CPTMTimestampPacketTest: public ::testing::Test {
 protected:

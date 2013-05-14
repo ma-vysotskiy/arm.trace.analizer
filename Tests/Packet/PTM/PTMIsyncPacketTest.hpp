@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "../Defines.hpp"
-#include "../Packet/PTM/PTMIsyncPacket.hpp"
-#include "../Exceptions/enumerror.hpp"
+#include "../../../Defines.hpp"
+#include "../../../Packet/PTM/PTMIsyncPacket.hpp"
+#include "../../../Exceptions/enumerror.hpp"
 
 class CPTMIsyncPacketTest: public ::testing::Test {
 protected:
