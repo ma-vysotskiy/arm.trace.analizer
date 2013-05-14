@@ -7,6 +7,7 @@
 
 #pragma once
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -24,11 +25,11 @@ public:
 	uint32_t get(string str) {
 		uint32_t result = -1;
 		if (settings.find(str) != settings.end()) {
-			result = *settings.find(str);
+			result = (settings.find(str))->second;
 		}
 		return result;
 	}
-private:
+protected:
 	uint32_t id;
 	map<string, uint32_t> settings;
 };
