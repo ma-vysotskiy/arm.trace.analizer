@@ -24,6 +24,7 @@ public:
 	}
 
 	void setSettings(string str) {
+		settings->init(str);
 	}
 
 	void output(list<CPacket> packets) {
