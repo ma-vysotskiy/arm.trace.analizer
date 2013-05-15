@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <utility>
 #include <stdint.h>
 #include "Packet/Data.hpp"
 #include <list>
@@ -8,7 +9,6 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-//	CStrategyResolver::getInstance().init(" la la la PTM=\"dasdadas output=\"asda\"\"");
 	std::fstream ifs;
 	uint32_t ts, value, bits;
 	std::string scale;
