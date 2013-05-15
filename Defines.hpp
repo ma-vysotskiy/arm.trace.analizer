@@ -8,11 +8,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "Packet/Data.hpp"
 
-using namespace std;
-
-typedef vector<CData> dataType;
+typedef std::vector<CData> dataType;
 typedef std::pair<std::string, std::string> fieldStrPair;
 
 // String defines used in various packets
