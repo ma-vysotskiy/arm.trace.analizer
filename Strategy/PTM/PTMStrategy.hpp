@@ -14,16 +14,18 @@ class CPTMStrategy : public CStrategy {
 public:
 	CPTMStrategy() :
 			CStrategy(0, new CPTMSettings()) {
-
 	}
-	~CPTMStrategy(){
+
+	~CPTMStrategy() {
 		delete settings;
 	}
-	list<CPacket> parse(list<CData> data) {
 
+	list<CPacket> parse(list<CData> data) {
+	}
+
+	void setSettings(string str) {
 	}
 
 	void output(list<CPacket> packets) {
-
 	}
 };
