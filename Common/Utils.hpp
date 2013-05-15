@@ -8,6 +8,10 @@
 #pragma once
 
 #include <string>
+#include <stack>
+
+#include "../Defines.hpp"
+#include "../Strategy/GlobalSettings.hpp"
 
 using namespace std;
 
@@ -37,4 +41,20 @@ public:
 		}
 		return result;
 	}
+
+	template<typename T>
+	inline static string enumToString(uint32_t enumValue);
+
 };
+
+template<typename T>
+inline string CUtils::enumToString(uint32_t enumValue) {
+	T obj(0, dataType());
+	return obj.getFieldStr(enumValue).first;
+}
+
+template<>
+inline string CUtils::enumToString<CGlobalSettings>(uint32_t enumValue) {
+	CGlobalSettings& obj = CGlobalSettings::getInstance();
+	return obj.getFieldStr(enumValue).first;
+}
