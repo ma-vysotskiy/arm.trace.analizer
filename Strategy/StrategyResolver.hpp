@@ -8,11 +8,14 @@
 #pragma once
 
 #include <vector>
-#include "../Strategy/Strategy.hpp"
-#include "../Strategy/PTM/PTMStrategy.hpp"
 #include <iostream>
 #include <iterator>
 #include <stack>
+
+#include "../Strategy/Strategy.hpp"
+#include "../Strategy/PTM/PTMStrategy.hpp"
+#include "../Common/Utils.hpp"
+
 using namespace std;
 
 class CStrategyResolver {
@@ -30,27 +33,7 @@ public:
 
 	void init(string str) {
 		for (int i = 0; i < strategies.size(); i++) {
-			uint32_t pos = str.find(getStrategiesNames(i) + "=\"", 0);
-			string::iterator it = str.begin();
-			it += pos + getStrategiesNames(i).size() + 2;
-			string::iterator start = it;
-			stack<char> st;
-			string result = "";
-			while (it != str.end()) {
-				string::iterator next = it + 1;
-				if ((*it) == '=' && (*next) == '\"') {
-					st.push('"');
-					it++;
-				} else if ((*it) == '\"') {
-					if (st.empty()) {
-						result = string(start, it);
-						break;
-					} else {
-						st.pop();
-					}
-				}
-				it++;
-			}
+			string result = CUtils::getInternalOptions(str, getStrategiesNames(i));
 			strategies[i]->setSettings(result);
 		}
 	}
