@@ -33,8 +33,11 @@ public:
 
 	void init(string str) {
 		for (int i = 0; i < strategies.size(); i++) {
-			string result = CUtils::getInternalOptions(str, getStrategiesNames(i));
-			strategies[i]->setSettings(result);
+			pair<string, string> res = CUtils::getInternalOptions(str,
+					getStrategiesNames(i));
+			strategies[i]->setSettings(res.second);
+			str = res.first;
+			cout << res.first;
 		}
 	}
 

@@ -17,7 +17,7 @@ using namespace std;
 
 class CUtils {
 public:
-	static string getInternalOptions(string str, string what) {
+	static pair<string, string> getInternalOptions(string str, string what) {
 		uint32_t pos = str.find(what + "=\"", 0);
 		string::iterator it = str.begin();
 		it += pos + what.size() + 2;
@@ -39,7 +39,10 @@ public:
 			}
 			it++;
 		}
-		return result;
+
+		string newStr = str.erase(pos, result.size() + 3 + what.size());
+
+		return make_pair(newStr, result);
 	}
 
 	template<typename T>
