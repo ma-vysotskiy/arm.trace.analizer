@@ -17,7 +17,7 @@ using namespace std;
 #undef enumBody
 #define enumBody \
 e_begin(field) \
-	e_member(output, output) \
+	e_member(Output, output) \
 e_end
 
 class CGlobalSettings : public CStrategySettings {
