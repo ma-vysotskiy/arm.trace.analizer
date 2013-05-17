@@ -70,8 +70,6 @@ public:
 	state instrSetCurrState;
 	//add enum declaration
 #include "../../Enum/enum_helper_pub.h"
-private:
 	//strings asociated with enum
 #include "../../Enum/enum_helper_pri.h"
-
 };

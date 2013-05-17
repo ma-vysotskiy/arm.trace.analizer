@@ -26,10 +26,3 @@ typedef std::pair<std::string, std::string> fieldStrPair;
 #define GETLASTFIELD	uint32_t getLastField() noexcept { \
 		return SIZE; \
 }
-
-#define GETFIELDSTR		const fieldStrPair& getFieldStr(uint32_t enumValue) throw (enum_error) { \
-	if ((enumValue < 0) || enumValue >= SIZE) { \
-		throw enum_error(); \
-	} \
-	return field_s(enumValue); \
-}
