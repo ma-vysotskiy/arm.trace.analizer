@@ -9,8 +9,6 @@
 
 	GETLASTFIELD
 
-	GETFIELDSTR
-
 //before includeing this please define enumBody
 
 //*

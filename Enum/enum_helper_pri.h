@@ -11,7 +11,13 @@
 //*
 //- DEFINE WHAT WE ARE CONSTRUCTING NEXT (array of pair<string, string>)
 //#define e_begin(arg) fieldStrPair arg##_s[SIZE]={
-#define e_begin(arg) static const fieldStrPair& arg##_s(int i) { static const fieldStrPair a[] = {
+//arg##_s
+#ifdef STATICFIELDGETTER
+#define e_begin(arg) static const fieldStrPair& getFieldStr(uint32_t i) { static const fieldStrPair a[] = {
+#else
+#define e_begin(arg) const fieldStrPair& getFieldStr(uint32_t i) { static const fieldStrPair a[] = {
+#endif
+
 #define e_member(arg,arg2) std::make_pair(#arg,#arg2) ,
 //#define e_end  };
 #define e_end };return a[i];}
