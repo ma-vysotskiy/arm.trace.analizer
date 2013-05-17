@@ -15,6 +15,8 @@
 #include "../Strategy/Strategy.hpp"
 #include "../Strategy/PTM/PTMStrategy.hpp"
 #include "../Common/Utils.hpp"
+#include "../Exceptions/strategyerror.hpp"
+#include "../Exceptions/notfounderror.hpp"
 
 using namespace std;
 
@@ -33,12 +35,22 @@ public:
 
 	void init(string str) {
 		for (int i = 0; i < strategies.size(); i++) {
-			pair<string, string> res = CUtils::getInternalOptions(str,
-					getStrategiesNames(i));
-			strategies[i]->setSettings(res.second);
-			str = res.first;
-			cout << res.first;
+			try {
+				pair<string, string> res = CUtils::getInternalOptions(str,
+						getStrategiesNames(i));
+				strategies[i]->setSettings(res.second);
+				str = res.first;
+			} catch (notfound_error &e) {
+				//
+			}
 		}
+	}
+
+	const CStrategy& getStrategy(uint32_t index) throw (strategy_error) {
+		if ((index >= strategies.size()) && (index < 0)) {
+			throw strategy_error();
+		}
+		return *strategies[index];
 	}
 
 	const string& getStrategiesNames(uint32_t index) const {
