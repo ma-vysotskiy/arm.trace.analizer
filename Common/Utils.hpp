@@ -29,8 +29,8 @@ public:
 				CPTMIsyncPacket::ContextID)] = false;
 		// ARM STATE? ARM THUMB JAZZELE ?
 		// contextidsize (for contextid packet)
-		string opt = CUtils::enumToPair<CComplexSettins>(
-				CComplexSettins::Output).second;
+		string opt = CUtils::enumToPair<CComplexSettings>(
+				CComplexSettings::Output).second;
 		try {
 			pair<string, string> res = CUtils::getInternalOptions(str, opt);
 			str = res.first;
@@ -96,12 +96,12 @@ inline pair<string, string> CUtils::enumToPair(uint32_t enumValue) {
 	return obj.getFieldStr(enumValue);
 }
 
-//template<>
-//inline pair<string, string> CUtils::enumToPair<CGlobalSettings>(
-//		uint32_t enumValue) {
-//	CGlobalSettings& obj = CGlobalSettings::getInstance();
-//	return obj.getFieldStr(enumValue);
-//}
+template<>
+inline pair<string, string> CUtils::enumToPair<CSimpleSettings>(
+		uint32_t enumValue) {
+	CSimpleSettings obj(0, dataType());
+	return obj.getFieldStr(enumValue);
+}
 
 template<typename T>
 inline string CUtils::enumToString(uint32_t enumValue) {

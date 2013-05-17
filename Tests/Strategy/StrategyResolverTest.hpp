@@ -11,6 +11,8 @@
 #include "gmock/gmock.h"
 
 #include "../../Strategy/StrategyResolver.hpp"
+#include "../../Strategy/Settings.hpp"
+#include "../../Common/Utils.hpp"
 
 class CStrategyResolverTest : public ::testing::Test {
 protected:
@@ -22,5 +24,8 @@ protected:
 
 TEST_F (CStrategyResolverTest, initTest) {
 	CStrategyResolver& resolver = CStrategyResolver::getInstance();
-	resolver.init(" la la la PTM=\"dasdadas output=\"asda\"\"");
+	resolver.init(" la %cc la la PTM=\"%t %cc %aoutput=\"asda\"\"");
+	CUtils::enumToPair<CSimpleSettings>(0);
+	CUtils::enumToPair<CComplexSettings>(0);
+	throw 0;
 }

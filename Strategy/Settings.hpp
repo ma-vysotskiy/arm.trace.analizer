@@ -58,9 +58,9 @@ e_begin(field) \
 	e_member(Output, output) \
 e_end
 
-class CComplexSettins {
+class CComplexSettings {
 public:
-	CComplexSettins(uint32_t x, dataType y) {
+	CComplexSettings(uint32_t x, dataType y) {
 	}
 #include "../Enum/enum_helper_pub.h"
 	//strings asociated with enum
