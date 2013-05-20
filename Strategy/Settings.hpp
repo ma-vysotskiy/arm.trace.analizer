@@ -34,33 +34,24 @@ private:
 
 };
 
+#define STATICFIELDGETTER
 #undef enumBody
 #define enumBody \
 e_begin(field) \
-	e_member(CycleCount, %cc) \
-	e_member(ContextID, %ci) \
 e_end
 
-#define STATICFIELDGETTER
-
-class CSimpleSettings {
+class CBaseOption {
 public:
 #include "../Enum/enum_helper_pub.h"
 //strings asociated with enum
 #include "../Enum/enum_helper_pri.h"
 };
 
-#undef enumBody
-#define enumBody \
-e_begin(field) \
-	e_member(Output, output) \
-e_end
-
-class CComplexSettings : public CSimpleSettings {
+class CBaseComplexOption : public CBaseOption {
 public:
+	virtual map<string, uint32_t> parseComplex(string opt, string toParse) =0;
 #include "../Enum/enum_helper_pub.h"
-	//strings asociated with enum
+//strings asociated with enum
 #include "../Enum/enum_helper_pri.h"
 };
-
 #undef STATICFIELDGETTER
