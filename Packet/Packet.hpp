@@ -20,6 +20,8 @@ public:
 			header(h), data(d) {
 
 	}
+	virtual ~CPacket() {
+	}
 	uint32_t getHeader() {
 		return header;
 	}
