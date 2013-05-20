@@ -5,6 +5,16 @@
  *      Author: mvis
  */
 
+#undef GETLASTFIELD
+#ifdef STATICFIELDGETTER
+#define GETLASTFIELD	static uint32_t getLastField() noexcept { \
+		return SIZE; \
+}
+#else
+#define GETLASTFIELD	uint32_t getLastField() noexcept { \
+		return SIZE; \
+}
+#endif
 
 
 	GETLASTFIELD

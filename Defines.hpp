@@ -23,6 +23,4 @@ typedef std::pair<std::string, std::string> fieldStrPair;
 //e_member(CycleCount, %cc)
 //e_member(ContexID, %ci)
 
-#define GETLASTFIELD	uint32_t getLastField() noexcept { \
-		return SIZE; \
-}
+
