@@ -9,8 +9,10 @@
 
 #include <string>
 #include <stack>
+#include <type_traits>
 
 #include <boost/regex.hpp>
+
 
 #include "../Defines.hpp"
 #include "../Strategy/Settings.hpp"
@@ -18,10 +20,13 @@
 
 using namespace std;
 
+template<typename T, typename = void>
+class CEnumToPair;
+
 class CUtils {
 public:
 
-	static map<string,uint32_t> parseOptions(string str){
+	static map<string, uint32_t> parseOptions(string str) {
 		map<string, uint32_t> settings;
 		settings[CUtils::enumToString<CPTMIsyncPacket>(
 				CPTMIsyncPacket::CycleCount)] = false;
@@ -86,22 +91,32 @@ public:
 	inline static string enumToString(uint32_t enumValue);
 
 	template<typename T>
-	inline static pair<string, string> enumToPair(uint32_t enumValue);
+	inline static pair<string, string> enumToPair(uint32_t enumValue) {
+		return CEnumToPair<T>::process(enumValue);
+	}
 
 };
 
-template<typename T>
-inline pair<string, string> CUtils::enumToPair(uint32_t enumValue) {
-	T obj(0, dataType());
-	return obj.getFieldStr(enumValue);
-}
+template<class T>
+class CEnumToPair<T,
+		typename enable_if<is_base_of<CSimpleSettings, T>::value>::type> {
+public:
+	static pair<string, string> process(uint32_t enumValue) {
+		T obj;
+		return obj.getFieldStr(enumValue);
+	}
+};
 
-template<>
-inline pair<string, string> CUtils::enumToPair<CSimpleSettings>(
-		uint32_t enumValue) {
-	CSimpleSettings obj(0, dataType());
-	return obj.getFieldStr(enumValue);
-}
+template<class T>
+class CEnumToPair<T,
+		typename enable_if<!is_base_of<CSimpleSettings, T>::value>::type> {
+public:
+	static pair<string, string> process(uint32_t enumValue) {
+		T obj(0, dataType());
+		return obj.getFieldStr(enumValue);
+	}
+
+};
 
 template<typename T>
 inline string CUtils::enumToString(uint32_t enumValue) {

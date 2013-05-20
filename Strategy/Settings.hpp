@@ -45,8 +45,6 @@ e_end
 
 class CSimpleSettings {
 public:
-	CSimpleSettings(uint32_t x, dataType y) {
-	}
 #include "../Enum/enum_helper_pub.h"
 //strings asociated with enum
 #include "../Enum/enum_helper_pri.h"
@@ -58,10 +56,8 @@ e_begin(field) \
 	e_member(Output, output) \
 e_end
 
-class CComplexSettings {
+class CComplexSettings : public CSimpleSettings {
 public:
-	CComplexSettings(uint32_t x, dataType y) {
-	}
 #include "../Enum/enum_helper_pub.h"
 	//strings asociated with enum
 #include "../Enum/enum_helper_pri.h"
