@@ -13,10 +13,10 @@
 
 #include <boost/regex.hpp>
 
-
 #include "../Defines.hpp"
 #include "../Strategy/Settings.hpp"
 #include "../Exceptions/notfounderror.hpp"
+#include "../Packet/Packet.hpp"
 
 using namespace std;
 
@@ -25,30 +25,33 @@ class CEnumToPair;
 
 class CUtils {
 public:
-
+	template<typename Simple, typename Complex>
 	static map<string, uint32_t> parseOptions(string str) {
 		map<string, uint32_t> settings;
-		settings[CUtils::enumToString<CPTMIsyncPacket>(
-				CPTMIsyncPacket::CycleCount)] = false;
-		settings[CUtils::enumToString<CPTMIsyncPacket>(
-				CPTMIsyncPacket::ContextID)] = false;
-		// ARM STATE? ARM THUMB JAZZELE ?
-		// contextidsize (for contextid packet)
-		string opt = CUtils::enumToPair<CComplexSettings>(
-				CComplexSettings::Output).second;
-		try {
-			pair<string, string> res = CUtils::getInternalOptions(str, opt);
-			str = res.first;
-			opt = CUtils::enumToPair<CPTMIsyncPacket>(
-					CPTMIsyncPacket::CycleCount).second;
+
+		for (uint32_t i = 0; i < Complex::getLastField(); i++) {
+			string opt = CUtils::enumToPair<Complex>(Complex::Output).second;
+			try {
+				pair<string, string> res = CUtils::getInternalOptions(str, opt);
+				str = res.first;
+				map<string, uint32_t> map = Complex().parseComplex(opt,
+						res.second);
+				if (!map.empty()) {
+					settings.insert(map.begin(), map.end());
+				}
+			} catch (notfound_error &e) {
+				//
+			}
+		}
+
+		for (uint32_t i = 0; i < Simple::getLastField(); i++) {
+			string opt = CUtils::enumToString<Simple>(i);
+			settings[opt] = false;
 			boost::regex e(opt);
 			boost::match_results<std::string::const_iterator> what;
-			bool x = 0;
-			if (x = boost::regex_search(str, what, e)) {
+			if (boost::regex_search(str, what, e)) {
 				settings[opt] = true;
 			}
-		} catch (notfound_error &e) {
-			//
 		}
 		return settings;
 	}
@@ -98,8 +101,7 @@ public:
 };
 
 template<class T>
-class CEnumToPair<T,
-		typename enable_if<is_base_of<CSimpleSettings, T>::value>::type> {
+class CEnumToPair<T, typename enable_if<is_base_of<CBaseOption, T>::value>::type> {
 public:
 	static pair<string, string> process(uint32_t enumValue) {
 		T obj;
@@ -108,8 +110,7 @@ public:
 };
 
 template<class T>
-class CEnumToPair<T,
-		typename enable_if<!is_base_of<CSimpleSettings, T>::value>::type> {
+class CEnumToPair<T, typename enable_if<is_base_of<CPacket, T>::value>::type> {
 public:
 	static pair<string, string> process(uint32_t enumValue) {
 		T obj(0, dataType());
