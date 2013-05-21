@@ -7,7 +7,11 @@
 
 #pragma once
 #include <iostream>
+#include <string>
+#include <algorithm>
+
 using namespace std;
+
 #include "../../../Defines.hpp"
 #include "../../../Common/Utils.hpp"
 #include "../../../Strategy/PTM/PTMSettings.hpp"
@@ -23,6 +27,7 @@ protected:
 
 	}
 	CPTMSettings settings;
+	CPTMComplexOption complexOpt;
 };
 
 TEST_F(CPTMSettingsTest, testSettings) {
@@ -35,3 +40,21 @@ TEST_F(CPTMSettingsTest, testSettings) {
 	EXPECT_EQ(settings.get(CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::CycleCount)),(uint32_t) 1);
 	EXPECT_EQ(settings.get(CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::ContextID)),(uint32_t) 1);
 }
+
+
+TEST_F (CPTMSettingsTest, testPTMComplexOptions) {
+	string optName = CUtils::enumToString<CPTMComplexOption>(
+			CPTMComplexOption::Output);
+	string cc = CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::CycleCount);
+	string ci = CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::ContextID);
+	string a = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::Address);
+	string ex = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::Exception);
+	string ns = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::NS);
+	settingsType map = complexOpt.parseComplex(optName, "%cc %ci %a %ex");
+	EXPECT_EQ(map[optName + "_" + cc],(uint32_t) 1);
+	EXPECT_EQ(map[optName + "_" + ci],(uint32_t) 1);
+	EXPECT_EQ(map[optName + "_" + a],(uint32_t) 1);
+	EXPECT_EQ(map[optName + "_" + ex],(uint32_t) 1);
+	EXPECT_EQ(map[optName + "_" + ns],(uint32_t) 0);
+}
+
