@@ -8,11 +8,14 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <string>
+#include <stdint.h>
 #include "Packet/Data.hpp"
 
 typedef std::vector<CData> dataType;
 typedef std::pair<std::string, std::string> fieldStrPair;
+typedef std::map<std::string, uint32_t> settingsType;
 
 // String defines used in various packets
 //e_member(T, %thu)

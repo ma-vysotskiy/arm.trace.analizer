@@ -26,15 +26,15 @@ class CEnumToPair;
 class CUtils {
 public:
 	template<typename Simple, typename Complex>
-	static map<string, uint32_t> parseOptions(string str) {
-		map<string, uint32_t> settings;
+	static settingsType parseOptions(string str) {
+		settingsType settings;
 
 		for (uint32_t i = 0; i < Complex::getLastField(); i++) {
 			string opt = CUtils::enumToPair<Complex>(Complex::Output).second;
 			try {
 				pair<string, string> res = CUtils::getInternalOptions(str, opt);
 				str = res.first;
-				map<string, uint32_t> map = Complex().parseComplex(opt,
+				settingsType map = Complex().parseComplex(opt,
 						res.second);
 				if (!map.empty()) {
 					settings.insert(map.begin(), map.end());
@@ -45,12 +45,13 @@ public:
 		}
 
 		for (uint32_t i = 0; i < Simple::getLastField(); i++) {
-			string opt = CUtils::enumToString<Simple>(i);
-			settings[opt] = false;
+			string opt = CUtils::enumToPair<Simple>(i).second;
+			string optName = CUtils::enumToPair<Simple>(i).first;
+			settings[optName] = false;
 			boost::regex e(opt);
 			boost::match_results<std::string::const_iterator> what;
 			if (boost::regex_search(str, what, e)) {
-				settings[opt] = true;
+				settings[optName] = true;
 			}
 		}
 		return settings;

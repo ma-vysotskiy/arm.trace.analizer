@@ -31,5 +31,5 @@ public:
 	}
 protected:
 	uint32_t id;
-	map<string, uint32_t> settings;
+	settingsType settings;
 };

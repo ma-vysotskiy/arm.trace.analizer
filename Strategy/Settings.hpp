@@ -49,7 +49,7 @@ public:
 
 class CBaseComplexOption : public CBaseOption {
 public:
-	virtual map<string, uint32_t> parseComplex(string opt, string toParse) =0;
+	virtual settingsType parseComplex(string opt, string toParse) =0;
 #include "../Enum/enum_helper_pub.h"
 //strings asociated with enum
 #include "../Enum/enum_helper_pri.h"
