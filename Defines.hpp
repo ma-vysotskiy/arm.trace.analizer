@@ -8,12 +8,15 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include <map>
 #include <string>
 #include <stdint.h>
 #include "Packet/Data.hpp"
+#include "Packet/Packet.hpp"
 
 typedef std::vector<CData> dataType;
+typedef std::list<CPacket> packetType;
 typedef std::pair<std::string, std::string> fieldStrPair;
 typedef std::map<std::string, uint32_t> settingsType;
 
@@ -25,5 +28,4 @@ typedef std::map<std::string, uint32_t> settingsType;
 //e_member(Reason, %r)
 //e_member(CycleCount, %cc)
 //e_member(ContexID, %ci)
-
 

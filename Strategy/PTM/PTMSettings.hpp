@@ -12,6 +12,7 @@
 #include <algorithm>
 
 #include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "../../Defines.hpp"
 #include "../../Strategy/StrategySettings.hpp"
@@ -52,6 +53,7 @@ public:
 #define enumBody \
 e_begin(field) \
 	e_member(Output, output) \
+	e_member(Id, id) \
 e_end
 
 class equal_pair : public binary_function<settingsType::value_type,
@@ -76,6 +78,7 @@ public:
 		cout << x.first << "|" << x.second << endl;
 	}
 };
+
 class CPTMComplexOption : public CBaseComplexOption {
 public:
 	CPTMComplexOption() :
@@ -110,6 +113,15 @@ public:
 				settings = fillMap(1,
 						CUtils::enumToString<CPTMComplexOption>(
 								CPTMComplexOption::Output));
+			}
+		} else if (opt
+				== CUtils::enumToString<CPTMComplexOption>(
+						CPTMComplexOption::Id)) {
+			try {
+				uint32_t id = boost::lexical_cast<int>(toParse);
+				settings[opt] = id;
+			} catch (boost::bad_lexical_cast const&) {
+				std::cout << "Error: input string was not valid" << std::endl;
 			}
 		}
 

@@ -30,7 +30,7 @@ protected:
 	CPTMComplexOption complexOpt;
 };
 
-TEST_F(CPTMSettingsTest, testSettings) {
+TEST_F(CPTMSettingsTest, testPTMSettings) {
 
 	//check default values of this options
 	EXPECT_EQ(settings.get(CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::CycleCount)),(uint32_t) 0);
@@ -41,7 +41,6 @@ TEST_F(CPTMSettingsTest, testSettings) {
 	EXPECT_EQ(settings.get(CUtils::enumToString<CPTMIsyncPacket>(CPTMIsyncPacket::ContextID)),(uint32_t) 1);
 }
 
-
 TEST_F (CPTMSettingsTest, testPTMComplexOptions) {
 	string optName = CUtils::enumToString<CPTMComplexOption>(
 			CPTMComplexOption::Output);
@@ -50,11 +49,16 @@ TEST_F (CPTMSettingsTest, testPTMComplexOptions) {
 	string a = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::Address);
 	string ex = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::Exception);
 	string ns = CUtils::enumToString<CPTMBranchPacket>(CPTMBranchPacket::NS);
+	string id = CUtils::enumToString<CPTMComplexOption>(
+			CPTMComplexOption::Id);
 	settingsType map = complexOpt.parseComplex(optName, "%cc %ci %a %ex");
 	EXPECT_EQ(map[optName + "_" + cc],(uint32_t) 1);
 	EXPECT_EQ(map[optName + "_" + ci],(uint32_t) 1);
 	EXPECT_EQ(map[optName + "_" + a],(uint32_t) 1);
 	EXPECT_EQ(map[optName + "_" + ex],(uint32_t) 1);
 	EXPECT_EQ(map[optName + "_" + ns],(uint32_t) 0);
+
+	map = complexOpt.parseComplex(id, "12");
+	EXPECT_EQ(map[id],(uint32_t) 12);
 }
 

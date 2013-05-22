@@ -12,7 +12,6 @@
 #include <string>
 
 #include "../Defines.hpp"
-#include "../Packet/Data.hpp"
 
 class CPacket {
 public:
