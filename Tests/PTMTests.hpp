@@ -21,5 +21,5 @@
 #include "../Tests/Strategy/PTM/PTMSettingsTest.hpp"
 
 #include "../Tests/Strategy/StrategyResolverTest.hpp"
-//#include "../Tests/Strategy/PTM/PTMStrategyTest.hpp"
+#include "../Tests/Strategy/PTM/PTMStrategyTest.hpp"
 
