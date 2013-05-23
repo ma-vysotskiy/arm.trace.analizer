@@ -23,7 +23,7 @@ e_begin(field) \
 	e_member(ContextID, %ci) \
 e_end
 
-class CPTMIsyncPacket: public CPacket {
+class CPTMIsyncPacket : public CPacket {
 
 public:
 	CPTMIsyncPacket(uint32_t h, dataType d) :
@@ -55,10 +55,12 @@ public:
 			result = getBits(37, 2);
 			break;
 		case CycleCount:
-			result = (getBits(48, 7) << 4)| (getBits(42, 4) << 0);
+			result = (getBits(72, 7) << 25) | (getBits(64, 7) << 18)
+					| (getBits(56, 7) << 11) | (getBits(48, 7) << 4)
+					| (getBits(42, 4) << 0);
 			break;
 		case ContextID:
-			result = getBits(72, 32);
+			result = getBits(80, 32);
 			break;
 		}
 		return result;

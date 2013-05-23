@@ -16,13 +16,18 @@
 #include <string>
 #include <stdint.h>
 
-#include "../Defines.hpp"
 #include "../Packet/Packet.hpp"
-#include "../Packet/Data.hpp"
+#include "../Defines.hpp"
+#include "../Exceptions/enumerror.hpp"
 
 using namespace std;
 
-class CPacketHelp: public CPacket {
+#undef enumBody
+#define enumBody \
+e_begin(field) \
+e_end
+
+class CPacketHelp : public CPacket {
 public:
 	CPacketHelp(uint32_t h, dataType d) :
 			CPacket(h, d), p("", "") {
@@ -33,19 +38,21 @@ public:
 	uint32_t helpGetBits(uint32_t first, uint32_t len) {
 		return getBits(first, len);
 	}
-	uint32_t getField(uint32_t enumValue) {
+	uint32_t getField(uint32_t enumValue) throw (enum_error) {
+		if ((enumValue < 0) || enumValue >= SIZE) {
+			throw enum_error();
+		}
 		return 0;
 	}
-	uint32_t getLastField() {
-		return 0;
-	}
-	const fieldStrPair& getFieldStr(uint32_t enumValue) {
-		throw exception();
-	}
+	//add enum declaration
+#include "../Enum/enum_helper_pub.h"
+	//strings asociated with enum
+#include "../Enum/enum_helper_pri.h"
+
 	const fieldStrPair p;
 };
 
-class CPacketTest: public ::testing::Test {
+class CPacketTest : public ::testing::Test {
 protected:
 	virtual void SetUp() {
 		dataType data;

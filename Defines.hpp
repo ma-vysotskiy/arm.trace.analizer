@@ -13,10 +13,8 @@
 #include <string>
 #include <stdint.h>
 #include "Packet/Data.hpp"
-#include "Packet/Packet.hpp"
 
 typedef std::vector<CData> dataType;
-typedef std::list<CPacket> packetType;
 typedef std::pair<std::string, std::string> fieldStrPair;
 typedef std::map<std::string, uint32_t> settingsType;
 

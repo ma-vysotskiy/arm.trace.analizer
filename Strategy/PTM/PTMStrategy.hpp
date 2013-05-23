@@ -10,10 +10,13 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <stdint.h>
+#include <memory>
 
 using namespace std;
 
 #include "../../Defines.hpp"
+#include "../../Packet/Data.hpp"
 #include "../../Strategy/Strategy.hpp"
 #include "../../Strategy/PTM/PTMSettings.hpp"
 #include "../../Packet/PTM/PTMPackets.hpp"
@@ -34,36 +37,83 @@ public:
 		for (dataType::iterator it = data.begin(); it < data.end(); it++) {
 			switch (it->data) {
 			case Async:
-				dataType packetData;
-				dataType::iterator header = it;
-				dataType::iterator dataStrart;
-				dataType::iterator dataEnd;
-				// now it points to first data byte
-				it++;
-				dataStrart = it;
-				dataEnd = it;
-				uint32_t counter = 0;
-				// iterate while data bytes are 0
-				while (it->data == Async) {
-					dataEnd++;
-					counter++;
-				}
-				// we must have at least 1 header byte and 4 data bytes
-				if (counter < 4) {
-					//warning!
-					cout << "Warning: Async packets size less than 5 bytes!"
-							<< endl;
-				}
-				// copy data
-				copy(dataStrart, dataEnd, packetData.begin());
-				// form packet object
-				packets.push_back(CPTMAsyncPacket(*header, packetData));
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					dataType::iterator dataStrart;
+					dataType::iterator dataEnd;
+					// now it points to first data byte
+					it++;
+					dataStrart = it;
+					dataEnd = it;
+					uint32_t counter = 0;
+					// iterate while data bytes are 0
+					while (dataEnd->data == Async) {
+						dataEnd++;
+						counter++;
+					}
+					// we must have at least 1 header byte and 4 data bytes
+					if (counter < 4) {
+						//warning!
+						cout << "Warning: Async packets size less than 5 bytes!"
+								<< endl;
+					}
+					// copy data
+					packetData.insert(packetData.begin(), dataStrart, dataEnd);
+					// form packet object
+					packets.insert(packets.end(),
+							make_shared < CPTMAsyncPacket
+									> (header->data, packetData));
 
-				// increment iterator so we wont process same data twice
-				// counter -1 because we will get it++ in a for loop
-				advance(it, counter - 1);
+					// increment iterator so we wont process same data twice
+					// counter -1 because we will get it++ in a for loop
+					advance(it, counter - 1);
+				}
 				break;
 			case Isync:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					dataType::iterator dataStrart;
+					dataType::iterator dataEnd;
+					// now it points to first data byte
+					it++;
+					dataStrart = it;
+					dataEnd = it;
+					uint32_t counter = 5;
+					uint32_t cc = settings->get(
+							CUtils::enumToString<CPTMSimpleOption>(
+									CPTMSimpleOption::CycleCount));
+					if (cc) {
+						advance(dataEnd, counter);
+						if (dataEnd->data & 0x40) {
+							dataEnd++;
+							counter++;
+							while (dataEnd->data & 0x80) {
+								dataEnd++;
+								counter++;
+							}
+							dataEnd++;
+							counter++;
+						}
+					}
+
+					uint32_t ci = settings->get(
+							CUtils::enumToString<CPTMSimpleOption>(
+									CPTMSimpleOption::ContextID));
+					if (ci) {
+						counter += 4;
+						advance(dataEnd, 4);
+					}
+
+					packetData.insert(packetData.begin(), dataStrart, dataEnd);
+
+					packets.insert(packets.end(),
+							make_shared < CPTMIsyncPacket
+									> (header->data, packetData));
+
+					advance(it, counter - 1);
+				}
 				break;
 			case WaypointUp:
 				break;
@@ -83,6 +133,9 @@ public:
 				case Atom:
 					break;
 				case Branch:
+					break;
+				default:
+					//print warning
 					break;
 				}
 				break;
@@ -111,6 +164,6 @@ public:
 		settings->init(str);
 	}
 
-	void output(list<CPacket> packets) {
+	void output(packetType packets) {
 	}
 };

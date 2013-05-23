@@ -24,6 +24,7 @@ protected:
 		data.push_back(CData(0x07, 21));
 		data.push_back(CData(0x0, 21));
 		data.push_back(CData(0x0, 21));
+		data.push_back(CData(0x0, 21));
 		data.push_back(CData(0x33, 21));
 		data.push_back(CData(0xbb, 21));
 		data.push_back(CData(0x45, 21));
@@ -38,6 +39,7 @@ protected:
 		data2.push_back(CData(0x45, 21));
 		data2.push_back(CData(0x1c, 21));
 		data2.push_back(CData(0x07, 21));
+		data2.push_back(CData(0x0, 21));
 		data2.push_back(CData(0x0, 21));
 		data2.push_back(CData(0x0, 21));
 		data2.push_back(CData(0x33, 21));

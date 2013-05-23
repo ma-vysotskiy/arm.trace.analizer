@@ -9,6 +9,7 @@
 
 #include <list>
 
+#include "../Defines.hpp"
 #include "../Strategy/StrategySettings.hpp"
 #include "../Packet/Packet.hpp"
 
@@ -22,9 +23,9 @@ public:
 	virtual ~CStrategy() {
 	}
 
-	virtual list<CPacket> parse(list<CData> data)=0;
+	virtual packetType parse(dataType data)=0;
 
-	virtual void output(list<CPacket> packets)=0;
+	virtual void output(packetType packets)=0;
 
 	virtual void setSettings(string str) {
 	}

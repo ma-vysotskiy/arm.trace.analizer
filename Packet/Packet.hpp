@@ -10,8 +10,14 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <memory>
+#include <list>
 
 #include "../Defines.hpp"
+
+class CPacket;
+typedef ::std::shared_ptr<CPacket> sharedPacket;
+typedef ::std::list<sharedPacket> packetType;
 
 class CPacket {
 public:
@@ -38,3 +44,4 @@ protected:
 private:
 	static const uint32_t byteSize = 8;
 };
+
