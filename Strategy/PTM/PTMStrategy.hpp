@@ -93,9 +93,9 @@ public:
 								dataEnd++;
 								counter++;
 							}
-							dataEnd++;
-							counter++;
 						}
+						dataEnd++;
+						counter++;
 					}
 
 					uint32_t ci = settings->get(
@@ -116,17 +116,167 @@ public:
 				}
 				break;
 			case WaypointUp:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					dataType::iterator dataStrart;
+					dataType::iterator dataEnd;
+					// now it points to first data byte
+					it++;
+					dataStrart = it;
+					dataEnd = it;
+					uint32_t counter = 1;
+					// extract address
+					{
+						//if we have address then 7ths bit is 1
+						while (dataEnd->data & 0x80) {
+							dataEnd++;
+							counter++;
+						}
+						//check if we have waypoint information byte
+						if (dataEnd->data & 0x60) {
+							dataEnd++;
+							counter++;
+						}
+					}
+					dataEnd++;
+					counter++;
+					packetData.insert(packetData.begin(), dataStrart, dataEnd);
+
+					::std::shared_ptr<CPTMWaypointPacket> p = make_shared
+							< CPTMWaypointPacket > (header->data, packetData);
+					p->instrSetCurrState = CPTMWaypointPacket::ARM;
+					packets.insert(packets.end(), p);
+
+					advance(it, counter - 2);
+				}
 				break;
 			case Trigger:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					::std::shared_ptr<CPTMTriggerPacket> p = make_shared
+							< CPTMTriggerPacket > (header->data, packetData);
+					packets.insert(packets.end(), p);
+				}
 				break;
 			case ContextID:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					dataType::iterator dataStrart;
+					dataType::iterator dataEnd;
+					uint32_t counter = 1;
+					uint32_t cis = settings->get(
+							CUtils::enumToString<CPTMComplexOption>(
+									CPTMComplexOption::ContextIdSize));
+					if (cis) {
+						// now it points to first data byte
+						it++;
+
+						dataStrart = it;
+						dataEnd = it;
+						for (uint32_t i = 0; i < cis; i++) {
+							dataEnd++;
+							counter++;
+						}
+
+						for (uint32_t i = 0; i < (4 - cis); i++) {
+							// insert zero bytes to make packet think that context ID always 32 bits long
+							packetData.insert(packetData.begin(),
+									CData(0x0, it->ts));
+
+						}
+						packetData.insert(packetData.begin(), dataStrart,
+								dataEnd);
+					}
+					::std::shared_ptr<CPTMContextIDPacket> p = make_shared
+							< CPTMContextIDPacket > (header->data, packetData);
+					packets.insert(packets.end(), p);
+					advance(it, counter - 1);
+				}
 				break;
 			case Timestamp:
 			case Timestamp | 0x4:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					dataType::iterator dataStrart;
+					dataType::iterator dataEnd;
+					// now it points to first data byte
+					it++;
+					dataStrart = it;
+					dataEnd = it;
+					uint32_t counter = 1;
+					// check how many timestamp bytes we have
+					{
+
+						while (dataEnd->data & 0x80) {
+							dataEnd++;
+							counter++;
+						}
+						// last timestamp byte
+						dataEnd++;
+						counter++;
+
+						// add zero bytes if needed
+						uint32_t tmpCounter = 7 - counter;
+						while (tmpCounter) {
+							packetData.insert(packetData.begin(),
+									CData(0x0, it->ts));
+						}
+
+						// copy data
+						packetData.insert(packetData.begin(), dataStrart,
+								dataEnd);
+						// to avoid coping twice
+						dataStrart = dataEnd;
+
+					}
+					// now cycle count
+					{
+						uint32_t cc = settings->get(
+								CUtils::enumToString<CPTMSimpleOption>(
+										CPTMSimpleOption::CycleCount));
+						if (cc) {
+							if (dataEnd->data & 0x40) {
+								dataEnd++;
+								counter++;
+								while (dataEnd->data & 0x80) {
+									dataEnd++;
+									counter++;
+								}
+							}
+							dataEnd++;
+							counter++;
+						}
+					}
+					packetData.insert(packetData.begin(), dataStrart, dataEnd);
+
+					::std::shared_ptr<CPTMTimestampPacket> p = make_shared
+							< CPTMTimestampPacket > (header->data, packetData);
+					packets.insert(packets.end(), p);
+					advance(it, counter - 1);
+				}
 				break;
 			case ExceptionRet:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					::std::shared_ptr<CPTMExceptionReturnPacket> p = make_shared
+							< CPTMExceptionReturnPacket
+							> (header->data, packetData);
+					packets.insert(packets.end(), p);
+				}
 				break;
 			case Ignore:
+				{
+					dataType packetData;
+					dataType::iterator header = it;
+					::std::shared_ptr<CPTMIgnorePacket> p = make_shared
+							< CPTMIgnorePacket > (header->data, packetData);
+					packets.insert(packets.end(), p);
+				}
 				break;
 			default:
 				switch (it->data & 1) {

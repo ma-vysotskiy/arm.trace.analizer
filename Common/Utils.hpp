@@ -30,12 +30,12 @@ public:
 		settingsType settings;
 
 		for (uint32_t i = 0; i < Complex::getLastField(); i++) {
-			string opt = CUtils::enumToPair<Complex>(Complex::Output).second;
+			string opt = CUtils::enumToPair<Complex>(i).second;
+			string optName = CUtils::enumToPair<Complex>(i).first;
 			try {
 				pair<string, string> res = CUtils::getInternalOptions(str, opt);
 				str = res.first;
-				settingsType map = Complex().parseComplex(opt,
-						res.second);
+				settingsType map = Complex().parseComplex(optName, res.second);
 				if (!map.empty()) {
 					settings.insert(map.begin(), map.end());
 				}

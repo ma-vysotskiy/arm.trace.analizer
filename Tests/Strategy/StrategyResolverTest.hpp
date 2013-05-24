@@ -24,7 +24,7 @@ protected:
 
 TEST_F (CStrategyResolverTest, initTest) {
 	CStrategyResolver& resolver = CStrategyResolver::getInstance();
-	resolver.init(" la %cc la la PTM=\"%t %cc %aoutput=\"asda\"\"");
+	resolver.init(" la %cc la la PTM=\"%t %cc %a output=\"asda\"\"");
 //	CUtils::enumToPair<CSimpleOption>(0);
 //	CUtils::enumToPair<CComplexSettings>(0);
 	throw 0;
