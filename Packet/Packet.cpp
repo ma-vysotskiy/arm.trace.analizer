@@ -13,7 +13,7 @@ using namespace std;
 uint32_t CPacket::getBits(uint32_t first, uint32_t len) {
 	uint32_t result = 0;
 	uint32_t startIndex = (uint32_t) (first / byteSize);
-	vector<CData>::iterator it = data.begin();
+	dataType::iterator it = data.begin();
 	it += startIndex;
 	first -= startIndex * byteSize;
 	uint32_t curBit = 0;
