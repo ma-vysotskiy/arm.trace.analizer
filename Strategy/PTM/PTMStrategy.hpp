@@ -243,6 +243,8 @@ public:
 									dataEnd++;
 									counter++;
 								}
+								dataEnd++;
+								counter++;
 							}
 						}
 					}
@@ -251,7 +253,7 @@ public:
 					::std::shared_ptr<CPTMTimestampPacket> p = make_shared
 							< CPTMTimestampPacket > (header->data, packetData);
 					packets.insert(packets.end(), p);
-					advance(it, counter - 1);
+					advance(it, counter - 2);
 				}
 				break;
 			case ExceptionRet:
@@ -276,8 +278,88 @@ public:
 			default:
 				switch (it->data & 1) {
 				case Atom:
+					{
+						dataType packetData;
+						dataType::iterator header = it;
+						dataType::iterator dataStrart;
+						dataType::iterator dataEnd;
+						// first data byte is also a header
+						dataStrart = it;
+						dataEnd = it;
+						uint32_t counter = 1;
+						uint32_t cc = settings->get(
+								CUtils::enumToString<CPTMSimpleOption>(
+										CPTMSimpleOption::CycleCount));
+						if (cc) {
+							if (dataEnd->data & 0x40) {
+								dataEnd++;
+								counter++;
+							}
+							while (dataEnd->data & 0x80) {
+								dataEnd++;
+								counter++;
+							}
+							dataEnd++;
+						}
+						packetData.insert(packetData.end(), dataStrart,
+								dataEnd);
+
+						::std::shared_ptr<CPTMAtomPacket> p = make_shared
+								< CPTMAtomPacket > (header->data, packetData);
+						packets.insert(packets.end(), p);
+						advance(it, counter - 1);
+					}
 					break;
 				case Branch:
+					{
+						dataType packetData;
+						dataType::iterator header = it;
+						dataType::iterator dataStrart;
+						dataType::iterator dataEnd;
+						// first data byte is also a header
+						dataStrart = it;
+						dataEnd = it;
+						uint32_t counter = 1;
+						if (header->data & 0x80) {
+
+							while (dataEnd->data & 0x80) {
+								dataEnd++;
+								counter++;
+							}
+							if (dataEnd->data & 0x40) {
+								dataEnd++;
+								counter++;
+							}
+							if (dataEnd->data & 0x80) {
+								dataEnd++;
+								counter++;
+							}
+							dataEnd++;
+							uint32_t cc = settings->get(
+									CUtils::enumToString<CPTMSimpleOption>(
+											CPTMSimpleOption::CycleCount));
+							if (cc) {
+								if (dataEnd->data & 0x40) {
+									dataEnd++;
+									counter++;
+								}
+								while (dataEnd->data & 0x80) {
+									dataEnd++;
+									counter++;
+								}
+								dataEnd++;
+							}
+
+						}
+
+						packetData.insert(packetData.end(), dataStrart,
+								dataEnd);
+
+						::std::shared_ptr<CPTMBranchPacket> p = make_shared
+								< CPTMBranchPacket > (header->data, packetData);
+						packets.insert(packets.end(), p);
+						advance(it, counter - 1);
+					}
 					break;
 				default:
 					//print warning

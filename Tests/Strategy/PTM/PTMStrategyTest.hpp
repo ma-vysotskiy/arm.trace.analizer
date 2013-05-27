@@ -38,7 +38,18 @@ protected:
 			CData(0xa0,0x0), CData(0xb0,0x0), CData(0xc0,0x0), CData(0xc0,0x0),
 
 			CData(0x50,0x0), CData(0xd0,0x0), CData(0xc0,0x0), CData(0xc1,0x0),
+			CData(0x03,0x0),
+			// branch
+			CData(0xa3,0x0), CData(0xc5,0x0), CData(0xec,0x0), CData(0xd4,0x0),
+			CData(0x49,0x0), CData(0x89,0x0), CData(0x07,0x0),
+
+			CData(0x50,0x0), CData(0xd0,0x0), CData(0xc0,0x0), CData(0xc1,0x0),
 			CData(0x83,0x0),
+			//atom
+			CData(0x52,0x0), CData(0xd0,0x0), CData(0xc0,0x0), CData(0xc1,0x0),
+			CData(0x03,0x0),
+			// trigger
+			CData(0x0c,0x0),
 		};
 		strategy.setSettings("cis=\"4\" %cc %ci");
 	}
@@ -52,7 +63,7 @@ protected:
 
 TEST_F(CPTMStrategyTest, testPTMStrategy) {
 	packetType packets = strategy.parse(data);
-	EXPECT_EQ(packets.size(), (uint32_t)6);
+	EXPECT_EQ(packets.size(), (uint32_t)9);
 	packetType::iterator it = packets.begin();
 	it++;
 	// second packet is Isync
@@ -77,4 +88,18 @@ TEST_F(CPTMStrategyTest, testPTMStrategy) {
 	// sixth packet is timestamp
 	EXPECT_EQ((*it)->get64Field(CPTMTimestampPacket::Timestamp), (uint64_t)0x020304050607);
 	EXPECT_EQ((*it)->getField(CPTMTimestampPacket::CycleCount), (uint32_t)0x07060504);
+	it++;
+	// seventh packet is branch
+	EXPECT_EQ((*it)->getField(CPTMBranchPacket::Address), (uint32_t)0x35364544);
+	EXPECT_EQ((*it)->getField(CPTMBranchPacket::NS), (uint32_t)0x1);
+	EXPECT_EQ((*it)->getField(CPTMBranchPacket::Exception), (uint32_t)0x74);
+	EXPECT_EQ((*it)->getField(CPTMBranchPacket::AltIS), (uint32_t)0x0);
+	EXPECT_EQ((*it)->getField(CPTMBranchPacket::CycleCount), (uint32_t)0x07060504);
+	it++;
+	// eithth packet is atom
+	EXPECT_EQ((*it)->getField(CPTMAtomPacket::F), (uint32_t)0x1);
+	EXPECT_EQ((*it)->getField(CPTMAtomPacket::Count), (uint32_t)0x07060504);
+	it++;
+	// nineth packet is trigger
+	EXPECT_EQ((*it)->getHeader(), (uint32_t)0x0c);
 }
