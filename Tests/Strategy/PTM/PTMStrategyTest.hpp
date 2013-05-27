@@ -52,7 +52,7 @@ protected:
 
 TEST_F(CPTMStrategyTest, testPTMStrategy) {
 	packetType packets = strategy.parse(data);
-	EXPECT_EQ(packets.size(), (uint32_t)5);
+	EXPECT_EQ(packets.size(), (uint32_t)6);
 	packetType::iterator it = packets.begin();
 	it++;
 	// second packet is Isync
@@ -75,6 +75,6 @@ TEST_F(CPTMStrategyTest, testPTMStrategy) {
 	EXPECT_EQ((*it)->getField(CPTMContextIDPacket::ContextID), (uint32_t)0x6677e66e);
 	it++;
 	// sixth packet is timestamp
-	EXPECT_EQ((*it)->get64Field(CPTMTimestampPacket::Timestamp), (uint64_t)0x01020304050607);
+	EXPECT_EQ((*it)->get64Field(CPTMTimestampPacket::Timestamp), (uint64_t)0x020304050607);
 	EXPECT_EQ((*it)->getField(CPTMTimestampPacket::CycleCount), (uint32_t)0x07060504);
 }

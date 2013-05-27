@@ -166,7 +166,7 @@ public:
 					dataType::iterator header = it;
 					dataType::iterator dataStrart;
 					dataType::iterator dataEnd;
-					uint32_t counter = 1;
+					uint32_t counter = 0;
 					uint32_t cis = settings->get(
 							CUtils::enumToString<CPTMComplexOption>(
 									CPTMComplexOption::ContextIdSize));
@@ -215,12 +215,9 @@ public:
 							dataEnd++;
 							counter++;
 						}
-						// last timestamp byte
-						dataEnd++;
-						counter++;
 
 						// add zero bytes if needed
-						uint32_t tmpCounter = 7 - counter;
+						uint32_t tmpCounter = 8 - counter;
 						while (tmpCounter) {
 							packetData.insert(packetData.begin(),
 									CData(0x0, it->ts));
@@ -247,11 +244,9 @@ public:
 									counter++;
 								}
 							}
-							dataEnd++;
-							counter++;
 						}
 					}
-					packetData.insert(packetData.begin(), dataStrart, dataEnd);
+					packetData.insert(packetData.end(), dataStrart, dataEnd);
 
 					::std::shared_ptr<CPTMTimestampPacket> p = make_shared
 							< CPTMTimestampPacket > (header->data, packetData);
