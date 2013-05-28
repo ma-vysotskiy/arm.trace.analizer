@@ -13,6 +13,7 @@
 
 #include <boost/regex.hpp>
 
+class CBaseOption;
 #include "../Defines.hpp"
 #include "../Strategy/Settings.hpp"
 #include "../Exceptions/notfounderror.hpp"
