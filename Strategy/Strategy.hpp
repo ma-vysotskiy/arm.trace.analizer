@@ -24,6 +24,7 @@ public:
 	virtual ~CStrategy() {
 	}
 
+	virtual CStrategy* newInstance() =0;
 	virtual packetType parse(dataType data) const=0;
 
 	virtual void output(packetType packets) const=0;

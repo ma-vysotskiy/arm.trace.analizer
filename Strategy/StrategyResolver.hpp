@@ -27,6 +27,10 @@ public:
 		for (uint32_t i = 0; i < strategies.size(); i++) {
 			delete strategies[i];
 		}
+		for (map<uint32_t, CStrategy*>::iterator it = IDtoStrategy.begin();
+				it != IDtoStrategy.end(); it++) {
+			delete (*it).second;
+		}
 	}
 	static CStrategyResolver& getInstance() {
 		static CStrategyResolver theSingleInstance;
@@ -36,12 +40,24 @@ public:
 	void init(string str) {
 		for (uint32_t i = 0; i < strategies.size(); i++) {
 			try {
-				pair<string, string> res = CUtils::getInternalOptions(str,
-						getStrategiesNames(i));
-				strategies[i]->setSettings(res.second);
-				str = res.first;
-				uint32_t id = strategies[i]->getOption("Id");
-				IDtoIndex[id] = i;
+				bool found = false;
+				try {
+					// wierd finding all internal options
+					while (true) {
+						pair<string, string> res = CUtils::getInternalOptions(
+								str, getStrategiesNames(i));
+						found = true;
+						CStrategy* newSt = strategies[i]->newInstance();
+						newSt->setSettings(res.second);
+						str = res.first;
+						uint32_t id = newSt->getOption("Id");
+						IDtoStrategy[id] = newSt;
+					}
+				} catch (notfound_error &e) {
+					if (!found) {
+						throw;
+					}
+				}
 			} catch (notfound_error &e) {
 				cout << "Warning! Options for strategy "
 						<< getStrategiesNames(i) << " not found!" << endl;
@@ -49,11 +65,12 @@ public:
 		}
 	}
 
-	const CStrategy& getStrategy(uint32_t index) throw (strategy_error) {
-		if ((index >= strategies.size()) && (index < 0)) {
+	const CStrategy& getStrategyById(uint32_t id) throw (strategy_error) {
+		map<uint32_t, CStrategy*>::iterator it = IDtoStrategy.find(id);
+		if(it == IDtoStrategy.end()){
 			throw strategy_error();
 		}
-		return *strategies[index];
+		return *(*it).second;
 	}
 
 	const string& getStrategiesNames(uint32_t index) const {
@@ -71,5 +88,5 @@ private:
 	}
 
 	vector<CStrategy*> strategies;
-	map<uint32_t, uint32_t> IDtoIndex;
+	map<uint32_t, CStrategy*> IDtoStrategy;
 };

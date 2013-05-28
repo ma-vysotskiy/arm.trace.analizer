@@ -29,6 +29,10 @@ public:
 			CStrategy(0, new CPTMSettings()) {
 	}
 
+	virtual CStrategy* newInstance() {
+		return new CPTMStrategy();
+	}
+
 	~CPTMStrategy() {
 		delete settings;
 	}
@@ -395,7 +399,7 @@ public:
 
 	void output(packetType packets) const {
 		const char tab = '\t';
-		cout << hex;
+		cout << hex << "Id: " << settings->get("Id") << endl;
 		for (packetType::iterator it = packets.begin(); it != packets.end();
 				it++) {
 			cout << typeid(**it).name() << endl;
