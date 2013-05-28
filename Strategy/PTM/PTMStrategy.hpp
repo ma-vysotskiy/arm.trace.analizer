@@ -12,6 +12,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <memory>
+#include <utility>
 
 using namespace std;
 
@@ -393,5 +394,15 @@ public:
 	}
 
 	void output(packetType packets) const {
+		const char tab = '\t';
+		cout << hex;
+		for (packetType::iterator it = packets.begin(); it != packets.end();
+				it++) {
+			cout << typeid(**it).name() << endl;
+			for (uint32_t i = 0; i < (*it)->getLastField(); i++) {
+				cout << tab << (*it)->getFieldStr(i).first << ": "
+						<< (*it)->getField(i) << endl;
+			}
+		}
 	}
 };
