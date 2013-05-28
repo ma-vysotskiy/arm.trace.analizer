@@ -32,7 +32,7 @@ public:
 		delete settings;
 	}
 
-	packetType parse(dataType data) {
+	packetType parse(dataType data) const {
 		packetType packets;
 		for (dataType::iterator it = data.begin(); it < data.end(); it++) {
 			switch (it->data) {
@@ -55,7 +55,8 @@ public:
 					// we must have at least 1 header byte and 4 data bytes
 					if (counter < 4) {
 						//warning!
-						cout << "Warning: Async packets size less than 5 bytes!"
+						cout << settings->get("Id")
+								<< " Warning: Async packets size less than 5 bytes!"
 								<< endl;
 					}
 					// copy data
@@ -391,6 +392,6 @@ public:
 		settings->init(str);
 	}
 
-	void output(packetType packets) {
+	void output(packetType packets) const {
 	}
 };

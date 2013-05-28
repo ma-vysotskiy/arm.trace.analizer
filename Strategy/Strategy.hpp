@@ -8,6 +8,7 @@
 #pragma once
 
 #include <list>
+#include <string>
 
 #include "../Defines.hpp"
 #include "../Strategy/StrategySettings.hpp"
@@ -23,11 +24,15 @@ public:
 	virtual ~CStrategy() {
 	}
 
-	virtual packetType parse(dataType data)=0;
+	virtual packetType parse(dataType data) const=0;
 
-	virtual void output(packetType packets)=0;
+	virtual void output(packetType packets) const=0;
 
 	virtual void setSettings(string str) {
+	}
+
+	uint32_t getOption(string s) const {
+		return settings->get(s);
 	}
 
 	const uint32_t& getIdentifier() {

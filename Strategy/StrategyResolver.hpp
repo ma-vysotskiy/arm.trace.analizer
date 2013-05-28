@@ -34,14 +34,17 @@ public:
 	}
 
 	void init(string str) {
-		for (int i = 0; i < strategies.size(); i++) {
+		for (uint32_t i = 0; i < strategies.size(); i++) {
 			try {
 				pair<string, string> res = CUtils::getInternalOptions(str,
 						getStrategiesNames(i));
 				strategies[i]->setSettings(res.second);
 				str = res.first;
+				uint32_t id = strategies[i]->getOption("Id");
+				IDtoIndex[id] = i;
 			} catch (notfound_error &e) {
-				//
+				cout << "Warning! Options for strategy "
+						<< getStrategiesNames(i) << " not found!" << endl;
 			}
 		}
 	}
@@ -68,4 +71,5 @@ private:
 	}
 
 	vector<CStrategy*> strategies;
+	map<uint32_t, uint32_t> IDtoIndex;
 };
