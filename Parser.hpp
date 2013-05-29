@@ -30,7 +30,6 @@ public:
 	}
 	void parse(istream& is, uint32_t mask) throw (notenough_data) {
 		map<uint32_t, dataType> IDtoData;
-		set<uint32_t> ids;
 		dataType rawData = getRawData(is);
 		uint32_t currID = 0;
 		for (dataType::iterator it = rawData.begin(); it != rawData.end(); it +=
@@ -106,27 +105,21 @@ public:
 				cout << "\t" << hex << (int) dataIt->data << endl;
 			}
 		}
-		auto getAllIDs =
-				[&](map<uint32_t, dataType>::value_type& x)
-				{
-					return x.first;
-				};
-		transform(IDtoData.begin(), IDtoData.end(), ids.begin(), getAllIDs);
-		// get set of all IDs from map
-		try {
-			CStrategyResolver& csr = CStrategyResolver::getInstance();
-			for (uint32_t i = 0;; i++) {
-				const CStrategy& strat = csr.getStrategyById(i);
-				uint32_t stratId = strat.getOption("Id");
-				map<uint32_t, dataType>::iterator dataIt = IDtoData.find(
-						stratId);
-				if (dataIt != IDtoData.end()) {
-					packetType parseRes = strat.parse(dataIt->second);
-					strat.output(parseRes);
-				}
-			}
-		} catch (strategy_error& e) {
-		}
+		CStrategyResolver& csr = CStrategyResolver::getInstance();
+		for_each(IDtoData.begin(), IDtoData.end(),
+				[&](pair<uint32_t, dataType> p) {
+					uint32_t stratId = p.first;
+					try {
+						const CStrategy& strat = csr.getStrategyById(stratId);
+						map<uint32_t, dataType>::iterator dataIt = IDtoData.find(
+								stratId);
+						if (dataIt != IDtoData.end()) {
+							IDtoPackets[stratId] = strat.parse(dataIt->second);
+							strat.output(IDtoPackets[stratId]);
+						}} catch(strategy_error& e) {
+						cout <<"Warning! Strategy with id " << stratId << " not found!" <<endl;
+					}
+				});
 	}
 private:
 
