@@ -90,8 +90,11 @@ public:
 					uint32_t cc = settings->get(
 							CUtils::enumToString<CPTMSimpleOption>(
 									CPTMSimpleOption::CycleCount));
+					advance(dataEnd, counter);
+					packetData.insert(packetData.end(), dataStrart, dataEnd);
+					dataStrart = dataEnd;
 					if (cc) {
-						advance(dataEnd, counter);
+
 						if (dataEnd->data & 0x40) {
 							dataEnd++;
 							counter++;
@@ -102,6 +105,14 @@ public:
 						}
 						dataEnd++;
 						counter++;
+						packetData.insert(packetData.begin(), dataStrart,
+								dataEnd);
+						dataStrart = dataEnd;
+					} else {
+						for (uint32_t i = 0; i < 5; i++) {
+							packetData.insert(packetData.end(),
+									CData(0x0, dataEnd->ts));
+						}
 					}
 
 					uint32_t ci = settings->get(
@@ -110,9 +121,14 @@ public:
 					if (ci) {
 						counter += 4;
 						advance(dataEnd, 4);
+						packetData.insert(packetData.end(), dataStrart,
+								dataEnd);
+					} else {
+						for (uint32_t i = 0; i < 4; i++) {
+							packetData.insert(packetData.end(),
+									CData(0x0, dataEnd->ts));
+						}
 					}
-
-					packetData.insert(packetData.begin(), dataStrart, dataEnd);
 
 					packets.insert(packets.end(),
 							make_shared < CPTMIsyncPacket
@@ -227,6 +243,7 @@ public:
 						while (tmpCounter) {
 							packetData.insert(packetData.begin(),
 									CData(0x0, it->ts));
+							tmpCounter--;
 						}
 
 						// copy data
@@ -251,6 +268,11 @@ public:
 								}
 								dataEnd++;
 								counter++;
+							}
+						} else {
+							for (uint32_t i = 0; i < 5; i++) {
+								packetData.insert(packetData.end(),
+										CData(0x0, dataEnd->ts));
 							}
 						}
 					}
@@ -306,9 +328,14 @@ public:
 								counter++;
 							}
 							dataEnd++;
+							packetData.insert(packetData.end(), dataStrart,
+									dataEnd);
+						} else {
+							for (uint32_t i = 0; i < 5; i++) {
+								packetData.insert(packetData.end(),
+										CData(0x0, dataEnd->ts));
+							}
 						}
-						packetData.insert(packetData.end(), dataStrart,
-								dataEnd);
 
 						::std::shared_ptr<CPTMAtomPacket> p = make_shared
 								< CPTMAtomPacket > (header->data, packetData);
@@ -324,7 +351,7 @@ public:
 						dataType::iterator dataEnd;
 						// first data byte is also a header
 						dataStrart = it;
-						dataEnd = it;
+						dataEnd = it + 1;
 						uint32_t counter = 1;
 						if (header->data & 0x80) {
 
@@ -360,6 +387,11 @@ public:
 
 						packetData.insert(packetData.end(), dataStrart,
 								dataEnd);
+						uint32_t size = packetData.size();
+						for (uint32_t i = 0; i < (12 - size); i++) {
+							packetData.insert(packetData.end(),
+									CData(0x0, dataEnd->ts));
+						}
 
 						::std::shared_ptr<CPTMBranchPacket> p = make_shared
 								< CPTMBranchPacket > (header->data, packetData);

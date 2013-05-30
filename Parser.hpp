@@ -30,7 +30,7 @@ public:
 	}
 	void parse(istream& is, uint32_t mask) throw (notenough_data) {
 		map<uint32_t, dataType> IDtoData;
-		dataType rawData = getRawData(is);
+		dataType rawData = getRawData(is, mask);
 		uint32_t currID = 0;
 		for (dataType::iterator it = rawData.begin(); it != rawData.end(); it +=
 				16) {
@@ -41,8 +41,9 @@ public:
 			CData lastByte = *lastByteIt;
 			for (uint32_t i = 0; i < 15; i++) {
 				CData currByte = *(it + i);
-				uint8_t lastBit = ((lastByte.data >> i) & 1);
-				bool isID = (currByte.data) & 0x1;
+
+				uint8_t lastBit = ((lastByte.data >> ((uint32_t) (i / 2))) & 1);
+				bool isID = ((currByte.data) & 0x1) && (i % 2 == 0);
 				if (!i % 2) {
 					currByte.data = (currByte.data & (~1)) | lastBit;
 				}
@@ -123,25 +124,33 @@ public:
 	}
 private:
 
-	dataType getRawData(istream& is) {
+	dataType getRawData(istream& is, uint32_t mask) {
 		dataType rawData;
 		uint32_t ts, value, bits;
 		std::string scale;
+		uint32_t bytesInWord = mask / 8;
 		while (!is.eof()) {
-			CData data;
-			CData data2;
 			is >> std::dec >> ts;
 			is >> scale;
 			is >> std::hex >> value;
 			is >> bits;
 			if (!is.fail()) {
-				data.data = value & 0xff;
-				data.ts = ts;
-				data2.data = (value >> 8) & 0xff;
-				data2.ts = ts;
-				rawData.push_back(data);
-				rawData.push_back(data2);
+				for (uint32_t i = 0; i < bytesInWord; i++) {
+					CData data;
+					data.data = (value >> 8 * i) & 0xff;
+					data.ts = ts;
+					rawData.push_back(data);
+				}
+			} else {
+//				throw 0;
 			}
+//				data.data = value & 0xff;
+//				data.ts = ts;
+//				data2.data = (value >> 8) & 0xff;
+//				data2.ts = ts;
+//				rawData.push_back(data);
+//				rawData.push_back(data2);
+
 //			cout << dec << ts << "\t" << hex << (int) data2.data << " "
 //					<< (int) data.data << " | " << bits << endl;
 		}

@@ -15,18 +15,19 @@ int main(int argc, char **argv) {
 	std::fstream ifs;
 	CParser& parser = CParser::getInstance();
 	string opts;
-	for (uint32_t i = 1; i < argc; i++) {
-		opts = opts + " " + argv[i];
-	}
-	ifs.open("test.txt", std::ifstream::in | std::ifstream::out);
-	CStrategyResolver::getInstance().init(opts);
-	try {
-		parser.parse(ifs, 0);
-	} catch (notenough_data& e) {
-		cout << "Exception! " << e.what() << endl;
-	}
+	if (argc >= 2) {
+		for (uint32_t i = 2; i < argc; i++) {
+			opts = opts + " " + argv[i];
+		}
+		ifs.open(argv[1], std::ifstream::in | std::ifstream::out);
+		CStrategyResolver::getInstance().init(opts);
+		try {
+			parser.parse(ifs, 32);
+		} catch (notenough_data& e) {
+			cout << "Exception! " << e.what() << endl;
+		}
 
-	ifs.close();
-
+		ifs.close();
+	}
 	return 0;
 }
