@@ -30,6 +30,9 @@ public:
 	uint32_t getHeader() {
 		return header;
 	}
+	dataType& getData() {
+		return data;
+	}
 	virtual uint32_t getField(uint32_t enumValue) = 0;
 	virtual uint64_t get64Field(uint32_t enumValue) {
 		return 0;

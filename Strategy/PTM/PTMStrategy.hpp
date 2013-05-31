@@ -105,7 +105,7 @@ public:
 						}
 						dataEnd++;
 						counter++;
-						packetData.insert(packetData.begin(), dataStrart,
+						packetData.insert(packetData.end(), dataStrart,
 								dataEnd);
 						dataStrart = dataEnd;
 					} else {
@@ -237,6 +237,8 @@ public:
 							dataEnd++;
 							counter++;
 						}
+						dataEnd++;
+						counter++;
 
 						// add zero bytes if needed
 						uint32_t tmpCounter = 8 - counter;
@@ -434,10 +436,25 @@ public:
 		cout << hex << "Id: " << settings->get("Id") << endl;
 		for (packetType::iterator it = packets.begin(); it != packets.end();
 				it++) {
-			cout << typeid(**it).name() << endl;
+			cout << typeid(**it).name() << ": " << hex << (*it)->getHeader()
+					<< endl << tab;
+			dataType& data = (*it)->getData();
+			for (dataType::iterator dataIt = data.begin(); dataIt != data.end();
+					dataIt++) {
+				cout << (uint32_t) (*dataIt).data << ", ";
+			}
+			cout << endl;
 			for (uint32_t i = 0; i < (*it)->getLastField(); i++) {
-				cout << tab << (*it)->getFieldStr(i).first << ": "
-						<< (*it)->getField(i) << endl;
+				cout << tab << (*it)->getFieldStr(i).first << ": ";
+
+				if ((((*it)->getHeader() == Timestamp)
+						|| ((*it)->getHeader() == (Timestamp | 0x4)))
+						&& (i == CPTMTimestampPacket::Timestamp)) {
+					cout << (*it)->get64Field(i);
+				} else {
+					cout << (*it)->getField(i);
+				}
+				cout << endl;
 			}
 		}
 	}
