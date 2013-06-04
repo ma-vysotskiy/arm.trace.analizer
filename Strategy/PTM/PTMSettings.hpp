@@ -73,12 +73,12 @@ public:
 		delete obj;
 	}
 };
-class f {
-public:
-	void operator()(settingsType::value_type x) {
-		cout << x.first << "|" << x.second << endl;
-	}
-};
+//class f {
+//public:
+//	void operator()(settingsType::value_type x) {
+//		cout << x.first << "|" << x.second << endl;
+//	}
+//};
 
 class CPTMComplexOption : public CBaseComplexOption {
 public:
