@@ -32,17 +32,24 @@ public:
 		map<uint32_t, dataType> IDtoData;
 		dataType rawData = getRawData(is, mask);
 		uint32_t currID = 0;
-		for (dataType::iterator it = rawData.begin(); it != rawData.end(); it +=
-				16) {
-			dataType::iterator lastByteIt = it + 15;
+//		IDtoData.insert(make_pair(1, rawData));
+		uint32_t count = 0;
+		// count variable placed here for crutch ;)
+		try{
+		for (dataType::iterator it = rawData.begin(); (count + 16)<= rawData.size();
+				advance(it, 16)) {
+			count+= 16;
+			dataType::iterator lastByteIt = it;
+			advance(lastByteIt, 16);
 			if (lastByteIt == rawData.end()) {
 				throw notenough_data();
 			}
-			CData lastByte = *lastByteIt;
+//			CData& lastByte = *lastByteIt;
 			for (uint32_t i = 0; i < 15; i++) {
 				CData currByte = *(it + i);
 
-				uint8_t lastBit = ((lastByte.data >> ((uint32_t) (i / 2))) & 1);
+				uint8_t lastBit = (((*lastByteIt).data >> ((uint32_t) (i / 2)))
+						& 1);
 				bool isID = ((currByte.data) & 0x1) && (i % 2 == 0);
 				if (!i % 2) {
 					currByte.data = (currByte.data & (~1)) | lastBit;
@@ -80,6 +87,9 @@ public:
 						cout << "Info! Changing ID to " << currID << "!"
 								<< endl;
 					} else {
+						if(currID == 0){
+							int k=0;
+						}
 						// not found - add new id
 						cout << "Info! New ID is " << currID << "!" << endl;
 						IDtoData.insert(make_pair(currID, dataType()));
@@ -97,15 +107,18 @@ public:
 				}
 			}
 		}
-		// process strategies
+		}catch(notenough_data& e){}
+		// output
 		for (map<uint32_t, dataType>::iterator it = IDtoData.begin();
 				it != IDtoData.end(); it++) {
 			cout << dec << it->first << ":" << endl;
 			for (dataType::iterator dataIt = it->second.begin();
 					dataIt != it->second.end(); dataIt++) {
-				cout << "\t" << hex << (int) dataIt->data << endl;
+				cout << "\t" << hex << (int) dataIt->data << "\t" << dec
+						<< (int) dataIt->ts << endl;
 			}
 		}
+		// process strategies
 		CStrategyResolver& csr = CStrategyResolver::getInstance();
 		for_each(IDtoData.begin(), IDtoData.end(),
 				[&](pair<uint32_t, dataType> p) {
@@ -140,6 +153,8 @@ private:
 					data.data = (value >> 8 * i) & 0xff;
 					data.ts = ts;
 					rawData.push_back(data);
+					cout << dec << ts << "\t" << hex << (int) data.data << " | "
+							<< bits << endl;
 				}
 			} else {
 //				throw 0;
@@ -151,8 +166,6 @@ private:
 //				rawData.push_back(data);
 //				rawData.push_back(data2);
 
-//			cout << dec << ts << "\t" << hex << (int) data2.data << " "
-//					<< (int) data.data << " | " << bits << endl;
 		}
 		return rawData;
 	}

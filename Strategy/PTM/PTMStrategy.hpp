@@ -57,8 +57,16 @@ public:
 						dataEnd++;
 						counter++;
 					}
+					if (dataEnd->data != 0x80) {
+						cout << settings->get("Id")
+								<< " Warning: Async packets must end with byte \'0x80\'!"
+								<< endl;
+					} else {
+						dataEnd++;
+						counter++;
+					}
 					// we must have at least 1 header byte and 4 data bytes
-					if (counter < 4) {
+					if (counter < 5) {
 						//warning!
 						cout << settings->get("Id")
 								<< " Warning: Async packets size less than 5 bytes!"
@@ -382,7 +390,6 @@ public:
 									dataEnd++;
 									counter++;
 								}
-								dataEnd++;
 							}
 
 						}
@@ -398,7 +405,7 @@ public:
 						::std::shared_ptr<CPTMBranchPacket> p = make_shared
 								< CPTMBranchPacket > (header->data, packetData);
 						packets.insert(packets.end(), p);
-						advance(it, counter - 1);
+						advance(it, counter);
 					}
 					break;
 				default:
