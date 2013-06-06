@@ -28,17 +28,27 @@ public:
 		static CParser theSingleInstance;
 		return theSingleInstance;
 	}
+
 	void parse(istream& is, uint32_t mask) throw (notenough_data) {
 		map<uint32_t, dataType> IDtoData;
 		dataType rawData = getRawData(is, mask);
+		IDtoData = extractID(rawData);
+		// output
+		printIdToData(IDtoData);
+		// process strategies
+		IDtoPackets = processData(IDtoData);
+	}
+protected:
+	map<uint32_t, dataType> extractID(const dataType rawData) {
 		uint32_t currID = 0;
 		uint32_t count = 0;
-		// count variable placed here for crutch ;)
+		map<uint32_t, dataType> IDtoData;
 		try {
-			for (dataType::iterator it = rawData.begin();
+			for (dataType::const_iterator it = rawData.cbegin();
 					(count + 16) <= rawData.size(); advance(it, 16)) {
+				// count variable placed here for crutch ;)
 				count += 16;
-				dataType::iterator lastByteIt = it;
+				dataType::const_iterator lastByteIt = it;
 				advance(lastByteIt, 15);
 				if (lastByteIt == rawData.end()) {
 					throw notenough_data();
@@ -108,36 +118,43 @@ public:
 		} catch (notenough_data& e) {
 			cout << "Warning! " << e.what() << endl;
 		}
-		// output
-		for (map<uint32_t, dataType>::iterator it = IDtoData.begin();
-				it != IDtoData.end(); it++) {
+		return IDtoData;
+	}
+
+	void printIdToData(const map<uint32_t, dataType> IDtoData) const {
+		for (map<uint32_t, dataType>::const_iterator it = IDtoData.cbegin();
+				it != IDtoData.cend(); it++) {
 			cout << dec << it->first << ":" << endl;
-			for (dataType::iterator dataIt = it->second.begin();
-					dataIt != it->second.end(); dataIt++) {
+			for (dataType::const_iterator dataIt = it->second.cbegin();
+					dataIt != it->second.cend(); dataIt++) {
 				cout << "\t" << hex << (int) dataIt->data << "\t" << dec
 						<< (int) dataIt->ts << endl;
 			}
 		}
-		// process strategies
+	}
+
+	map<uint32_t, packetType> processData(
+			const map<uint32_t, dataType> IDtoData) {
+		map<uint32_t, packetType> idToPacketsMap;
 		CStrategyResolver& csr = CStrategyResolver::getInstance();
 		for_each(IDtoData.begin(), IDtoData.end(),
 				[&](pair<uint32_t, dataType> p) {
 					uint32_t stratId = p.first;
 					try {
 						const CStrategy& strat = csr.getStrategyById(stratId);
-						map<uint32_t, dataType>::iterator dataIt = IDtoData.find(
+						map<uint32_t, dataType>::const_iterator dataIt = IDtoData.find(
 								stratId);
-						if (dataIt != IDtoData.end()) {
-							IDtoPackets[stratId] = strat.parse(dataIt->second);
-							strat.output(IDtoPackets[stratId]);
+						if (dataIt != IDtoData.cend()) {
+							idToPacketsMap[stratId] = strat.parse(dataIt->second);
+							strat.output(idToPacketsMap[stratId]);
 						}} catch(strategy_error& e) {
 						cout <<"Warning! Strategy with id " << stratId << " not found!" <<endl;
 					}
 				});
+		return idToPacketsMap;
 	}
-private:
 
-	dataType getRawData(istream& is, uint32_t mask) {
+	dataType getRawData(istream& is, const uint32_t mask) {
 		dataType rawData;
 		uint32_t ts, value, bits;
 		std::string scale;
@@ -163,6 +180,9 @@ private:
 		removeSyncData(rawData);
 		return rawData;
 	}
+private:
+
+
 
 	void removeSyncData(dataType& rawData) {
 		dataType::iterator it = rawData.begin();
