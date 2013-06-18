@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "../Tests/PacketTest.hpp"
 #include "../Tests/Packet/PTM/PTMAsyncPacketTest.hpp"
 #include "../Tests/Packet/PTM/PTMIsyncPacketTest.hpp"
 #include "../Tests/Packet/PTM/PTMAtomPacketTest.hpp"

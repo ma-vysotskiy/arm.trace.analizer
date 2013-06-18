@@ -23,6 +23,8 @@
 using namespace std;
 
 class CParser {
+	typedef map<uint32_t, dataType> idtodataType;
+	typedef map<uint32_t, packetType> idtopacketType;
 public:
 	static CParser& getInstance() {
 		static CParser theSingleInstance;
@@ -30,7 +32,7 @@ public:
 	}
 
 	void parse(istream& is, uint32_t mask) throw (notenough_data) {
-		map<uint32_t, dataType> IDtoData;
+		idtodataType IDtoData;
 		dataType rawData = getRawData(is, mask);
 		IDtoData = extractID(rawData);
 		// output
@@ -39,10 +41,15 @@ public:
 		IDtoPackets = processData(IDtoData);
 	}
 protected:
-	map<uint32_t, dataType> extractID(const dataType rawData) {
+	idtodataType extractID(const dataType rawData) {
 		uint32_t currID = 0;
 		uint32_t count = 0;
-		map<uint32_t, dataType> IDtoData;
+		idtodataType IDtoData;
+//		cout << "raw Data" << endl;
+//		for (dataType::const_iterator it = rawData.cbegin();
+//				it != rawData.cend(); it++) {
+//			cout << (int) it->data << endl;
+//		}
 		try {
 			for (dataType::const_iterator it = rawData.cbegin();
 					(count + 16) <= rawData.size(); advance(it, 16)) {
@@ -74,11 +81,13 @@ protected:
 							// next byte
 							nextByte = *(it + i);
 							// find old id
-							map<uint32_t, dataType>::iterator dataIt =
-									IDtoData.find(currID);
+							idtodataType::iterator dataIt = IDtoData.find(
+									currID);
 							// found - add
 							if (dataIt != IDtoData.end()) {
 								dataIt->second.push_back(nextByte);
+								cout << "Push data " << (int) nextByte.data
+										<< endl;
 							} else {
 								// if cannot find old id that is really bad
 								cout << "Error! Old ID " << nextByte.data
@@ -88,25 +97,21 @@ protected:
 							currID = currByte.data >> 1;
 						}
 						// find new id
-						map<uint32_t, dataType>::iterator dataIt =
-								IDtoData.find(currID);
+						idtodataType::iterator dataIt = IDtoData.find(currID);
 						// found - changing to new id
 						if (dataIt != IDtoData.end()) {
 							cout << "Info! Changing ID to " << currID << "!"
 									<< endl;
 						} else {
-							if (currID == 0) {
-								int k = 0;
-							}
 							// not found - add new id
 							cout << "Info! New ID is " << currID << "!" << endl;
 							IDtoData.insert(make_pair(currID, dataType()));
 						}
 					} else {
 						// DATA
-						map<uint32_t, dataType>::iterator dataIt =
-								IDtoData.find(currID);
+						idtodataType::iterator dataIt = IDtoData.find(currID);
 						if (dataIt != IDtoData.end()) {
+							cout << "Push data " << (int) currByte.data << endl;
 							dataIt->second.push_back(currByte);
 						} else {
 							cout << "Warning! Current ID " << currByte.data
@@ -121,8 +126,8 @@ protected:
 		return IDtoData;
 	}
 
-	void printIdToData(const map<uint32_t, dataType> IDtoData) const {
-		for (map<uint32_t, dataType>::const_iterator it = IDtoData.cbegin();
+	void printIdToData(const idtodataType IDtoData) const {
+		for (idtodataType::const_iterator it = IDtoData.cbegin();
 				it != IDtoData.cend(); it++) {
 			cout << dec << it->first << ":" << endl;
 			for (dataType::const_iterator dataIt = it->second.cbegin();
@@ -133,8 +138,7 @@ protected:
 		}
 	}
 
-	map<uint32_t, packetType> processData(
-			const map<uint32_t, dataType> IDtoData) {
+	map<uint32_t, packetType> processData(const idtodataType IDtoData) {
 		map<uint32_t, packetType> idToPacketsMap;
 		CStrategyResolver& csr = CStrategyResolver::getInstance();
 		for_each(IDtoData.begin(), IDtoData.end(),
@@ -142,7 +146,7 @@ protected:
 					uint32_t stratId = p.first;
 					try {
 						const CStrategy& strat = csr.getStrategyById(stratId);
-						map<uint32_t, dataType>::const_iterator dataIt = IDtoData.find(
+						idtodataType::const_iterator dataIt = IDtoData.find(
 								stratId);
 						if (dataIt != IDtoData.cend()) {
 							idToPacketsMap[stratId] = strat.parse(dataIt->second);
@@ -164,7 +168,7 @@ protected:
 			is >> scale;
 			is >> std::hex >> value;
 			is >> bits;
-			if (!is.fail()) {
+			if (!is.fail() && (bits < 100)) {
 				for (uint32_t i = 0; i < bytesInWord; i++) {
 					CData data;
 					data.data = (value >> 8 * i) & 0xff;
@@ -181,8 +185,6 @@ protected:
 		return rawData;
 	}
 private:
-
-
 
 	void removeSyncData(dataType& rawData) {
 		dataType::iterator it = rawData.begin();
@@ -215,6 +217,6 @@ private:
 	}
 	CParser& operator=(const CParser&) {
 	}
-	map<uint32_t, packetType> IDtoPackets;
+	idtopacketType IDtoPackets;
 }
 ;

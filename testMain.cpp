@@ -5,7 +5,9 @@
  *      Author: mvis
  */
 
+#include "Tests/PacketTest.hpp"
 #include "Tests/PTMTests.hpp"
+#include "Tests/ParserTest.hpp"
 
 int main(int argc, char **argv) {
 	::testing::InitGoogleTest(&argc, argv);
